@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infografica 4 — Invecchiamento Cellulare e Falsi Positivi XXY</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;1,300;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #090e1a;
+    --panel: #0f1628;
+    --panel2: #141c34;
+    --purple: #7c5cbf;
+    --purple-light: #a987e8;
+    --cyan: #38d2d2;
+    --red: #e55151;
+    --amber: #f5a623;
+    --green: #4fc580;
+    --text: #e2ddf5;
+    --muted: #6b7499;
+    --border: rgba(124,92,191,0.25);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content:'';
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 200px;
+  }
+
+  .wrapper { position: relative; z-index: 1; }
+
+  /* HEADER */
+  .header {
+    padding: 52px 64px 44px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(124,92,191,0.12) 0%, transparent 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .header-orb {
+    position:absolute; top:-100px; right:-100px;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(124,92,191,0.2) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .eyebrow {
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(30px, 4.5vw, 58px);
+    font-weight: 600;
+    line-height: 1.05;
+    max-width: 720px;
+    color: var(--text);
+  }
+  h1 em { color: var(--purple-light); font-style: italic; }
+  .header-sub {
+    margin-top: 18px;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 620px;
+    font-weight: 300;
+  }
+  .contradiction-badge {
+    display: inline-block;
+    margin-top: 20px;
+    background: rgba(229,81,81,0.15);
+    border: 1px solid var(--red);
+    color: var(--red);
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 6px 14px;
+    text-transform: uppercase;
+  }
+
+  /* MAIN */
+  .main { padding: 44px 64px; }
+
+  /* The paradox setup */
+  .paradox-header {
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--purple-light);
+    text-transform: uppercase;
+    margin-bottom: 22px;
+    animation: glow 0.7s ease both;
+  }
+
+  .paradox-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 40px;
+    animation: glow 0.6s 0.1s ease both;
+  }
+  .p-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+  }
+  .p-box-label {
+    font-family: 'Courier Prime', monospace;
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .p-box-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .p-box-title.red { color: var(--red); }
+  .p-box-title.cyan { color: var(--cyan); }
+  .p-box-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  .arrow-mid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .arrow-sym {
+    font-size: 36px;
+    color: var(--amber);
+  }
+  .arrow-q {
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    color: var(--amber);
+    text-align: center;
+    line-height: 1.5;
+    max-width: 80px;
+  }
+
+  /* Mechanism diagram */
+  .mechanism {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    margin-bottom: 36px;
+    animation: glow 0.6s 0.15s ease both;
+  }
+  .mech-title {
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  .blood-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: 28px;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .bf-segment {
+    flex: 1;
+    padding: 20px 16px;
+    text-align: center;
+    position: relative;
+    border-right: 1px solid var(--border);
+  }
+  .bf-segment:last-child { border-right: none; }
+  .bf-seg-young { background: rgba(79,197,128,0.08); }
+  .bf-seg-mid   { background: rgba(245,166,35,0.08); }
+  .bf-seg-older { background: rgba(229,81,81,0.08); }
+  .bf-age {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .bf-seg-young .bf-age { color: var(--green); }
+  .bf-seg-mid   .bf-age { color: var(--amber); }
+  .bf-seg-older .bf-age { color: var(--red); }
+
+  .cell-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+  .cell {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    position: relative;
+    transition: transform 0.2s;
+  }
+  .cell:hover { transform: scale(1.4); }
+  .cell.xx { background: var(--green); }
+  .cell.xo { background: var(--red); }
+  .cell.xo::after {
+    content: '−';
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: white;
+    line-height: 1;
+  }
+  .bf-pct {
+    font-family: 'Courier Prime', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .bf-seg-young .bf-pct { color: var(--green); }
+  .bf-seg-mid   .bf-pct { color: var(--amber); }
+  .bf-seg-older .bf-pct { color: var(--red); }
+  .bf-pct-label { font-size: 10px; color: var(--muted); }
+
+  .legend-row { display: flex; gap: 20px; margin-top: 6px; justify-content: center; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+
+  /* Algorithm confusion diagram */
+  .algo-diagram {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .algo-step {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 18px;
+    position: relative;
+  }
+  .algo-step::after {
+    content: '→';
+    position: absolute;
+    right: -16px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: var(--purple);
+  }
+  .algo-step:last-child::after { display: none; }
+  .algo-n {
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    color: var(--purple-light);
+    margin-bottom: 8px;
+  }
+  .algo-txt { font-size: 13px; line-height: 1.5; color: var(--text); }
+  .algo-txt strong { color: var(--amber); }
+
+  /* Age data card */
+  .age-data {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 36px;
+    animation: glow 0.6s 0.25s ease both;
+  }
+  .age-chart-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 30px;
+  }
+  .age-chart-title {
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--purple-light);
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+
+  .chart-bars { display: flex; flex-direction: column; gap: 12px; }
+  .chart-bar-row { display: flex; align-items: center; gap: 12px; }
+  .cb-age {
+    font-size: 12px;
+    min-width: 60px;
+    color: var(--muted);
+    font-family: 'Courier Prime', monospace;
+  }
+  .cb-track {
+    flex: 1; height: 16px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .cb-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s ease;
+  }
+  .cb-val {
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    min-width: 50px;
+    text-align: right;
+  }
+
+  .maternal-mosaic-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 30px;
+  }
+  .mmc-big {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 72px;
+    font-weight: 600;
+    color: var(--purple-light);
+    line-height: 1;
+  }
+  .mmc-sub {
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 8px;
+    margin-bottom: 18px;
+  }
+  .mmc-desc { font-size: 14px; line-height: 1.7; color: var(--text); }
+  .mmc-desc strong { color: var(--amber); }
+
+  /* The counterintuitive box */
+  .counter-box {
+    background: linear-gradient(135deg, rgba(124,92,191,0.2) 0%, rgba(56,210,210,0.1) 100%);
+    border: 1px solid var(--purple);
+    border-radius: 14px;
+    padding: 36px;
+    margin-bottom: 36px;
+    animation: glow 0.6s 0.3s ease both;
+  }
+  .counter-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-style: italic;
+    color: var(--purple-light);
+    margin-bottom: 20px;
+  }
+  .counter-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .cs-step {
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    padding: 18px 16px;
+    border: 1px solid rgba(124,92,191,0.2);
+    position: relative;
+  }
+  .cs-num {
+    font-family: 'Courier Prime', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: rgba(124,92,191,0.5);
+    margin-bottom: 8px;
+  }
+  .cs-txt { font-size: 12px; line-height: 1.6; color: var(--text); }
+  .cs-txt strong { color: var(--cyan); }
+  .cs-arrow {
+    position: absolute;
+    right: -17px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: var(--purple);
+    z-index: 2;
+  }
+
+  /* Final box */
+  .final-box {
+    background: rgba(229,81,81,0.08);
+    border: 1.5px solid var(--red);
+    border-radius: 14px;
+    padding: 30px 36px;
+    animation: glow 0.6s 0.4s ease both;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  .fb-icon { font-size: 48px; }
+  .fb-content h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    color: var(--red);
+    margin-bottom: 12px;
+  }
+  .fb-content p { font-size: 14px; line-height: 1.8; color: var(--muted); }
+  .fb-content p strong { color: var(--text); }
+
+  @keyframes glow {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 900px) {
+    .main, .header { padding: 24px 18px; }
+    .paradox-grid { grid-template-columns: 1fr; }
+    .algo-diagram { grid-template-columns: 1fr; }
+    .age-data { grid-template-columns: 1fr; }
+    .counter-steps { grid-template-columns: 1fr 1fr; }
+    .final-box { grid-template-columns: 1fr; }
+    .algo-step::after { display: none; }
+    .cs-arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<div class="header">
+  <div class="header-orb"></div>
+  <div class="eyebrow">Infografica IV · Ematologia e cfDNA Screening</div>
+  <h1>L'invecchiamento delle<br>cellule ematiche:<br>il <em>falso positivo XXY</em><br>controintuitivo</h1>
+  <p class="header-sub">Con l'età, i leucociti femminili perdono progressivamente un cromosoma X (fenomeno XO). Questo disturba silenziosamente gli algoritmi del NIPT — generando un segnale inatteso che può contribuire a falsi positivi per 47,XXY.</p>
+  <span class="contradiction-badge">⚡ Meccanismo paradossale — XO materno → segnale XXY fetale?</span>
+</div>
+
+<div class="main">
+
+  <!-- Paradox setup -->
+  <div class="paradox-header">Il paradosso centrale</div>
+  <div class="paradox-grid">
+    <div class="p-box">
+      <div class="p-box-label">Cosa ci aspettiamo intuitivamente</div>
+      <div class="p-box-title red">Leucociti XO materni → segnale Turner (45,X)</div>
+      <div class="p-box-desc">Se la madre ha cellule ematiche con un solo cromosoma X, ci aspettiamo che il cfDNA mostri un deficit di X — compatibile con Turner nel feto, non XXY.</div>
+    </div>
+    <div class="arrow-mid">
+      <div class="arrow-sym">⚡</div>
+      <div class="arrow-q">Ma la realtà è più complessa</div>
+    </div>
+    <div class="p-box">
+      <div class="p-box-label">Cosa può accadere invece</div>
+      <div class="p-box-title cyan">Disturbo algoritmico → segnale aberrante per qualsiasi SCA</div>
+      <div class="p-box-desc">Il background materno "rumoroso" da cellule XO altera le basi di normalizzazione degli algoritmi di dosage — producendo segnali che possono essere interpretati come anomalie di qualsiasi cromosoma sessuale, incluso XXY.</div>
+    </div>
+  </div>
+
+  <!-- Mechanism -->
+  <div class="mechanism">
+    <div class="mech-title">Meccanismo: perdita età-correlata del cromosoma X nei leucociti (Loss of X — LOX)</div>
+
+    <!-- Blood cells visualization by age -->
+    <div class="blood-flow">
+      <div class="bf-segment bf-seg-young">
+        <div class="bf-age">&lt; 16 anni</div>
+        <div class="cell-row" id="cells-young"></div>
+        <div class="bf-pct">0.07%</div>
+        <div class="bf-pct-label">leucociti XO</div>
+      </div>
+      <div class="bf-segment bf-seg-mid">
+        <div class="bf-age">~41 anni</div>
+        <div class="cell-row" id="cells-mid"></div>
+        <div class="bf-pct">~2–4%</div>
+        <div class="bf-pct-label">leucociti XO</div>
+      </div>
+      <div class="bf-segment bf-seg-older">
+        <div class="bf-age">&gt; 65 anni</div>
+        <div class="cell-row" id="cells-older"></div>
+        <div class="bf-pct">&gt;7.3%</div>
+        <div class="bf-pct-label">leucociti XO</div>
+      </div>
+    </div>
+
+    <div class="legend-row">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Leucocita XX (normale)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Leucocita XO (perdita X)</div>
+    </div>
+
+    <!-- Algorithm steps -->
+    <div class="algo-diagram" style="margin-top:32px;">
+      <div class="algo-step">
+        <div class="algo-n">STEP 1</div>
+        <div class="algo-txt">Il cfDNA materno include DNA dei leucociti con <strong>crescente proporzione XO</strong>. Il DNA placentare (fetale) è solo 10–20% del totale.</div>
+        <div class="cs-arrow">→</div>
+      </div>
+      <div class="algo-step">
+        <div class="algo-n">STEP 2</div>
+        <div class="algo-txt">L'algoritmo tenta di normalizzare il segnale X comparando con un <strong>background materno atteso XX</strong>. Ma il background reale è "sporco" da cellule XO.</div>
+        <div class="cs-arrow">→</div>
+      </div>
+      <div class="algo-step">
+        <div class="algo-n">STEP 3</div>
+        <div class="algo-txt">La discrepanza nella stima del dosage cromosomico X/Y può generare segnali <strong>compatibili con SCAs aberranti</strong> — incluso XXY — in un feto maschio.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Age data + maternal mosaicism -->
+  <div class="age-data">
+    <div class="age-chart-card">
+      <div class="age-chart-title">Frequenza LOX per fascia d'età — Russell et al. 2007</div>
+      <div class="chart-bars">
+        <div class="chart-bar-row">
+          <span class="cb-age">&lt; 16 aa</span>
+          <div class="cb-track"><div class="cb-fill" style="width:1%; background:var(--green);"></div></div>
+          <span class="cb-val" style="color:var(--green)">0.07%</span>
+        </div>
+        <div class="chart-bar-row">
+          <span class="cb-age">20–30 aa</span>
+          <div class="cb-track"><div class="cb-fill" style="width:5%; background:var(--green);"></div></div>
+          <span class="cb-val" style="color:var(--green)">~0.3%</span>
+        </div>
+        <div class="chart-bar-row">
+          <span class="cb-age">35–40 aa</span>
+          <div class="cb-track"><div class="cb-fill" style="width:22%; background:var(--amber);"></div></div>
+          <span class="cb-val" style="color:var(--amber)">~1–2%</span>
+        </div>
+        <div class="chart-bar-row">
+          <span class="cb-age">41–50 aa</span>
+          <div class="cb-track"><div class="cb-fill" style="width:40%; background:var(--amber);"></div></div>
+          <span class="cb-val" style="color:var(--amber)">~2–4%</span>
+        </div>
+        <div class="chart-bar-row">
+          <span class="cb-age">&gt; 65 aa</span>
+          <div class="cb-track"><div class="cb-fill" style="width:80%; background:var(--red);"></div></div>
+          <span class="cb-val" style="color:var(--red)">&gt;7.3%</span>
+        </div>
+      </div>
+      <p style="margin-top:18px; font-size:12px; color:var(--muted); line-height:1.5;">SMFM #74: <em>"The low frequency is likely below the ability of cfDNA technologies to detect routinely"</em> — ma a 41 anni la soglia di rilevabilità si avvicina. Il meccanismo è ancora non completamente caratterizzato.</p>
+    </div>
+
+    <div class="maternal-mosaic-card">
+      <div class="mmc-big">8.6%</div>
+      <div class="mmc-sub">dei positivi SCA al NIPT — Wang et al. 2014</div>
+      <div class="mmc-desc">Una quota concreta dei risultati positivi al cfDNA per le anomalie dei cromosomi sessuali deriva da <strong>mosaicismo del cromosoma sessuale materno</strong> — spesso ignoto prima del test. Questo include sia condizioni germinali (mosaicismo Turner) sia alterazioni somatiche acquisite con l'età come la LOX. Il fenomeno spiega come la "firma" cromosomica materna possa confondersi con quella fetale, generando risultati difficili da interpretare senza una dettagliata anamnesi materna e, se necessario, un cariotipo materno di conferma.</div>
+    </div>
+  </div>
+
+  <!-- The counterintuitive pathway -->
+  <div class="counter-box">
+    <div class="counter-title">Il percorso controintuitivo passo dopo passo</div>
+    <div class="counter-steps">
+      <div class="cs-step">
+        <div class="cs-num">01</div>
+        <div class="cs-txt">Donna XX di 41 anni. Una quota crescente di leucociti ha <strong>perso il secondo cromosoma X</strong> (cellule XO — fenomeno LOX).</div>
+        <div class="cs-arrow">→</div>
+      </div>
+      <div class="cs-step">
+        <div class="cs-num">02</div>
+        <div class="cs-txt">Il suo sangue contiene un mix: DNA materno XX + DNA materno XO + cfDNA placentare. Il <strong>background materno è disturbato</strong>.</div>
+        <div class="cs-arrow">→</div>
+      </div>
+      <div class="cs-step">
+        <div class="cs-num">03</div>
+        <div class="cs-txt">L'algoritmo di dosage X/Y del NIPT usa il background materno come riferimento. Con il background XO, <strong>la stima del X fetale risulta distorta</strong>.</div>
+        <div class="cs-arrow">→</div>
+      </div>
+      <div class="cs-step">
+        <div class="cs-num">04</div>
+        <div class="cs-txt">In un feto <strong>maschio XY</strong>, l'algoritmo può interpretare il segnale distorto come un eccesso relativo di X → compatibile con <strong>47,XXY</strong>. Falso Positivo.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Final clinical implication -->
+  <div class="final-box">
+    <div class="fb-icon">⚠️</div>
+    <div class="fb-content">
+      <h3>Implicazione clinica: il cariotipo materno può essere necessario</h3>
+      <p>Quando un NIPT risulta positivo per un'anomalia del cromosoma sessuale e la successiva amniocentesi mostra un feto cromosomicamente <strong>normale</strong>, si dovrebbe considerare la possibilità di un mosaicismo materno. Un <strong>cariotipo materno</strong> (o un'analisi FISH su leucociti per LOX) può essere appropriato per spiegare il falso positivo e per fornire un counseling corretto sui rischi per la donna stessa — indipendentemente dall'esito della gravidanza. Questo è un meccanismo <strong>unico alle anomalie dei cromosomi sessuali</strong> e non si applica alle trisomie autosomiche.</p>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+  // Generate cell dot visualizations
+  function makeCells(containerId, totalCells, xoCount) {
+    const c = document.getElementById(containerId);
+    const types = Array(xoCount).fill('xo').concat(Array(totalCells - xoCount).fill('xx'));
+    // shuffle
+    for(let i=types.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [types[i],types[j]]=[types[j],types[i]];
+    }
+    types.forEach(t=>{
+      const el=document.createElement('div');
+      el.className='cell '+t;
+      el.title=t==='xo'?'Leucocita XO (perdita X)':'Leucocita XX';
+      c.appendChild(el);
+    });
+  }
+  makeCells('cells-young', 20, 0);   // 0.07% ≈ 0
+  makeCells('cells-mid',   20, 1);   // ~2% ≈ 1 su 20  
+  makeCells('cells-older', 20, 3);   // >7% ≈ 3 su 20
+</script>
+</body>
+</html>

@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Segnale e Rumore — NIPT, XXY e le quattro trappole</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream:   #faf7f2;
+    --warm:    #f3ede2;
+    --ink:     #1c1812;
+    --ink2:    #2e2820;
+    --muted:   #7a7164;
+    --rule:    rgba(28,24,18,0.12);
+    --teal:    #1d5c5c;
+    --teal-bg: #edf4f4;
+    --gold:    #b07d2a;
+    --gold-bg: #faf3e4;
+    --red:     #8b2020;
+    --red-bg:  #fdf0f0;
+    --drop-shadow: 0 2px 24px rgba(28,24,18,0.08);
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===================== TOPBAR ===================== */
+  .topbar {
+    background: var(--ink);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .rubric-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: #c8a76a;
+    text-transform: uppercase;
+  }
+  .topbar-divider {
+    width: 1px; height: 20px;
+    background: rgba(255,255,255,0.15);
+  }
+  .topbar-sub {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.5px;
+  }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .issue-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 2px;
+  }
+  .sub-btn {
+    background: #c8a76a;
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 18px;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s;
+  }
+  .sub-btn:hover { background: #e0be88; }
+
+  /* ===================== HERO ===================== */
+  .hero {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 72px 40px 48px;
+    text-align: center;
+    position: relative;
+  }
+  .rubric-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .rt-line { width: 32px; height: 1.5px; background: var(--gold); }
+  .rt-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3.5px;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 5vw, 58px);
+    font-weight: 700;
+    line-height: 1.08;
+    color: var(--ink);
+    max-width: 700px;
+    margin: 0 auto 24px;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--teal);
+  }
+
+  .hero-subtitle {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 580px;
+    margin: 0 auto 36px;
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding-top: 28px;
+    border-top: 1px solid var(--rule);
+  }
+  .author-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #c8a76a;
+    flex-shrink: 0;
+  }
+  .meta-text { text-align: left; }
+  .meta-author {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .meta-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+  .meta-divider { width: 1px; height: 30px; background: var(--rule); }
+  .meta-read {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .meta-tag {
+    background: var(--teal-bg);
+    color: var(--teal);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    padding: 4px 10px;
+    text-transform: uppercase;
+  }
+
+  /* ===================== HERO RULE ===================== */
+  .section-rule {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  .ornamental-rule {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 0;
+  }
+  .or-line { flex: 1; height: 1px; background: var(--rule); }
+  .or-diamond {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    transform: rotate(45deg);
+    flex-shrink: 0;
+  }
+
+  /* ===================== BODY ===================== */
+  .content {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* Intro */
+  .intro-block {
+    padding: 52px 0 40px;
+    animation: fadeUp 0.7s ease both;
+  }
+  .intro-lede {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--ink2);
+    border-left: 3px solid var(--gold);
+    padding-left: 28px;
+    margin-bottom: 32px;
+  }
+  .intro-body {
+    font-size: 17px;
+    line-height: 1.85;
+    color: var(--ink2);
+  }
+  .intro-body p + p { margin-top: 22px; }
+  .intro-body strong { color: var(--ink); font-weight: 700; }
+  .intro-body em { color: var(--teal); font-style: italic; }
+
+  /* Q&A SECTIONS */
+  .qa-block {
+    margin: 64px 0;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .qa-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .qa-number::after { content:''; flex:1; height:1px; background: linear-gradient(90deg, rgba(176,125,42,0.4), transparent); }
+
+  .qa-question {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .qa-question-sub {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-bottom: 28px;
+    font-style: italic;
+  }
+
+  .qa-answer {
+    font-size: 17px;
+    line-height: 1.85;
+    color: var(--ink2);
+  }
+  .qa-answer p + p { margin-top: 20px; }
+  .qa-answer strong { color: var(--ink); font-weight: 700; }
+
+  /* INFOGRAPHIC EMBED */
+  .infographic-embed {
+    margin: 40px -40px;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: var(--drop-shadow);
+    border-top: 3px solid var(--gold);
+    border-bottom: 3px solid var(--gold);
+    position: relative;
+    background: var(--warm);
+  }
+  .infographic-embed iframe {
+    width: 100%;
+    height: 700px;
+    border: none;
+    display: block;
+  }
+  .infographic-caption {
+    padding: 14px 28px;
+    background: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ic-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #c8a76a;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .ic-text {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  /* CALLOUT BOXES */
+  .callout {
+    padding: 22px 26px;
+    border-radius: 2px;
+    margin: 28px 0;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  .callout.key {
+    background: var(--gold-bg);
+    border-left: 3px solid var(--gold);
+    color: var(--ink2);
+  }
+  .callout.warning {
+    background: var(--red-bg);
+    border-left: 3px solid var(--red);
+    color: var(--ink2);
+  }
+  .callout.clinical {
+    background: var(--teal-bg);
+    border-left: 3px solid var(--teal);
+    color: var(--ink2);
+  }
+  .callout-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .callout.key     .callout-label { color: var(--gold); }
+  .callout.warning .callout-label { color: var(--red); }
+  .callout.clinical .callout-label { color: var(--teal); }
+
+  /* STAT INLINES */
+  .stat-inline {
+    display: inline-block;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15em;
+    font-weight: 700;
+    color: var(--teal);
+    border-bottom: 1.5px solid var(--teal);
+    line-height: 1.1;
+  }
+  .stat-inline.red { color: var(--red); border-color: var(--red); }
+  .stat-inline.gold { color: var(--gold); border-color: var(--gold); }
+
+  /* PULL QUOTE */
+  .pull-quote {
+    margin: 44px 0;
+    padding: 0 0 0 0;
+    text-align: center;
+    position: relative;
+  }
+  .pq-inner {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--teal);
+    line-height: 1.4;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 32px 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+  .pq-inner::before {
+    content: '\201C';
+    font-size: 80px;
+    line-height: 0;
+    position: absolute;
+    top: 40px; left: -10px;
+    color: rgba(29,92,92,0.15);
+    font-family: Georgia, serif;
+  }
+  .pq-source {
+    margin-top: 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  /* DIVIDER between Q&As */
+  .qa-divider {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 0;
+  }
+  .qad-line { flex: 1; height: 1px; background: var(--rule); }
+  .qad-sym {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    color: var(--rule);
+    line-height: 1;
+  }
+
+  /* CONCLUSION */
+  .conclusion {
+    background: var(--ink);
+    color: rgba(250,247,242,0.85);
+    padding: 52px 40px;
+    margin: 64px -40px 0;
+  }
+  .conclusion-inner { max-width: 600px; }
+  .concl-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: #c8a76a;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .concl-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 34px;
+    font-weight: 700;
+    color: #faf7f2;
+    line-height: 1.15;
+    margin-bottom: 24px;
+  }
+  .concl-body {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+    color: rgba(250,247,242,0.7);
+  }
+  .concl-body p + p { margin-top: 18px; }
+  .concl-body strong { color: #faf7f2; }
+
+  /* SOURCES */
+  .sources-block {
+    padding: 40px 0 60px;
+    border-top: 1px solid var(--rule);
+    margin-top: 52px;
+  }
+  .sources-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .sources-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .sources-list li {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    padding-left: 20px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .sources-list li::before {
+    content: '·';
+    position: absolute;
+    left: 6px;
+    color: var(--gold);
+  }
+
+  /* FOOTER */
+  .footer {
+    background: var(--warm);
+    border-top: 1px solid var(--rule);
+    padding: 36px 40px;
+    text-align: center;
+  }
+  .footer-rubric {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .footer-desc {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    max-width: 500px;
+    margin: 0 auto 22px;
+    line-height: 1.6;
+  }
+  .footer-btn {
+    display: inline-block;
+    background: var(--ink);
+    color: #faf7f2;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 12px 32px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+    text-decoration: none;
+  }
+  .footer-btn:hover { background: var(--teal); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity:0; transform: translateY(18px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  .qa-block:nth-child(1) { animation-delay: 0s; }
+  .qa-block:nth-child(2) { animation-delay: 0.1s; }
+  .qa-block:nth-child(3) { animation-delay: 0.2s; }
+  .qa-block:nth-child(4) { animation-delay: 0.3s; }
+
+  @media (max-width: 700px) {
+    body { font-size: 16px; }
+    .topbar { padding: 0 16px; }
+    .topbar-sub, .issue-num { display: none; }
+    .hero { padding: 44px 20px 32px; }
+    .content { padding: 0 20px; }
+    .infographic-embed { margin: 32px -20px; }
+    .infographic-embed iframe { height: 540px; }
+    .conclusion { padding: 40px 20px; margin: 48px -20px 0; }
+    h1 { font-size: 34px; }
+    .qa-question { font-size: 24px; }
+    .pq-inner { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <div class="topbar-left">
+    <div class="rubric-name">Segnale e Rumore</div>
+    <div class="topbar-divider"></div>
+    <div class="topbar-sub">Medicina perinatale spiegata bene</div>
+  </div>
+  <div class="topbar-right">
+    <span class="issue-num">N° 01 · FEB 2026</span>
+    <button class="sub-btn">Iscriviti gratis</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="rubric-tag">
+    <div class="rt-line"></div>
+    <div class="rt-text">Segnale e Rumore · Educazione Perinatale</div>
+    <div class="rt-line"></div>
+  </div>
+
+  <h1>Quando il 99% <em>inganna</em>:<br>il NIPT per XXY<br>e le quattro trappole</h1>
+
+  <p class="hero-subtitle">Sensibilità 93%, specificità 99,86% — eppure quasi una donna su due con test positivo porta un feto sano. Un'analisi in quattro domande, con altrettante infografiche.</p>
+
+  <div class="meta-row">
+    <div class="author-avatar">S</div>
+    <div class="meta-text">
+      <div class="meta-author">Salvatore · Segnale e Rumore</div>
+      <div class="meta-date">27 Febbraio 2026 · Vol. 1, N° 1</div>
+    </div>
+    <div class="meta-divider"></div>
+    <div class="meta-read">⏱ 12 min lettura</div>
+    <div class="meta-tag">Gratuito</div>
+  </div>
+</header>
+
+<!-- ORNAMENTAL RULE -->
+<div class="section-rule">
+  <div class="ornamental-rule">
+    <div class="or-line"></div>
+    <div class="or-diamond"></div>
+    <div class="or-line"></div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="content">
+
+  <!-- INTRO -->
+  <section class="intro-block">
+    <div class="intro-lede">
+      C'è un test che i media descrivono come "quasi infallibile". Lo stesso test che, in alcune condizioni, sbaglia quasi una volta su due.
+    </div>
+
+    <div class="intro-body">
+      <p>
+        Ogni anno, migliaia di coppie ricevono un referto di test prenatale non invasivo — il <strong>NIPT</strong>, o più correttamente <em>cfDNA screening</em> — che riporta un risultato "ad alto rischio" per la <strong>sindrome di Klinefelter (47,XXY)</strong>. La comunicazione di quel numero è spesso accompagnata da cifre che suonano rassicuranti nella loro precisione: sensibilità 93%, specificità 99,86%. Numeri che in medicina difficilmente si vedono così alti. Numeri che sembrano non lasciare spazio all'errore.
+      </p>
+      <p>
+        Eppure, secondo i dati della <strong>SMFM Consult Series #74</strong> del 2025 — il documento di riferimento dell'American Society of Maternal-Fetal Medicine — a 40 anni, con NIPT positivo per XXY, la probabilità che il feto sia effettivamente XXY si ferma al <em>52%</em>. Quasi un lancio di moneta.
+      </p>
+      <p>
+        Come è possibile? Come possono convivere una specificità del 99,86% e un tasso di falsi positivi del 48%? E perché questo problema non è uguale per tutte le anomalie, né uguale a tutte le età?
+      </p>
+      <p>
+        In questo numero inaugurale di <strong>Segnale e Rumore</strong>, proviamo a smontare la questione pezzo per pezzo. Non con semplificazioni, ma con i numeri reali e i meccanismi biologici che li spiegano. In quattro domande, quattro risposte, quattro infografiche.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ Q1 ============ -->
+  <div class="ornamental-rule"><div class="or-line"></div><div class="or-diamond"></div><div class="or-line"></div></div>
+
+  <section class="qa-block">
+    <div class="qa-number">Domanda I di IV</div>
+    <h2 class="qa-question">Quanto è grande, davvero, il problema dei falsi positivi per 47,XXY?</h2>
+    <p class="qa-question-sub">I numeri assoluti che il referto non riporta</p>
+
+    <div class="qa-answer">
+      <p>
+        Partiamo dai dati. La Tabella 2 del documento SMFM 2025 riporta, per la condizione 47,XXY, una sensibilità del <span class="stat-inline">93%</span> e una specificità del <span class="stat-inline">99,86%</span>. Il Valore Predittivo Positivo — cioè la probabilità che un test positivo corrisponda davvero a una condizione reale nel feto — è del <span class="stat-inline gold">29%</span> a 20 anni e sale al <span class="stat-inline red">52%</span> a 40 anni.
+      </p>
+      <p>
+        Tradotto in parole: <strong>su cento donne di quarant'anni con NIPT positivo per XXY, circa quarantotto portano un feto cromosomicamente normale</strong> per quel locus. Non è un'eccezione rara: è la norma statistica.
+      </p>
+    </div>
+
+    <div class="callout key">
+      <span class="callout-label">Dato chiave</span>
+      La situazione è ulteriormente complicata dalla <strong>variabilità tra studi</strong>: il PPV per 47,XXY oscilla, a seconda della coorte e dei criteri diagnostici, tra il 29% (calcolatori indipendenti) e il 97,7% (Shear et al.). Questa forbice di quasi 70 punti percentuali è essa stessa un segnale clinico — indica che la performance del test è profondamente dipendente dalla prevalenza nella popolazione testata.
+    </div>
+
+    <div class="qa-answer">
+      <p>
+        Il confronto con la trisomia 21 è illuminante: anche per la T21, la specificità è circa 99,91% — quasi identica. Ma il PPV a 40 anni per la T21 è del 93%, contro il 52% di XXY. La differenza non è nel test: è nella <em>prevalenza di base</em> delle due condizioni. Ed è esattamente questo il punto cieco che genera la trappola cognitiva di cui parleremo nella prossima sezione.
+      </p>
+    </div>
+  </section>
+
+  <!-- INFOGRAPHIC 1 EMBED -->
+  <div class="infographic-embed" style="border-top-color: #f5a623;">
+    <iframe src="infografica1_ppv_xxy.html" title="Infografica I — Quantificare i Falsi Positivi XXY" loading="lazy" scrolling="no" onload="this.style.height=(this.contentWindow.document.body.scrollHeight+20)+'px'"></iframe>
+    <div class="infographic-caption">
+      <span class="ic-num">Infografica I</span>
+      <div class="ic-text">Falsi positivi per 47,XXY: i numeri della SMFM Table 2, la variabilità tra metanalisi, e la griglia visiva "100 donne NIPT+ a 40 anni"</div>
+    </div>
+  </div>
+
+  <!-- ============ Q2 ============ -->
+  <div class="ornamental-rule" style="margin:48px 0 0;"><div class="or-line"></div><div class="or-diamond"></div><div class="or-line"></div></div>
+
+  <section class="qa-block">
+    <div class="qa-number">Domanda II di IV</div>
+    <h2 class="qa-question">Qual è la trappola cognitiva per una donna di 41 anni?</h2>
+    <p class="qa-question-sub">Come sensibilità e specificità alte possono trarre in inganno anche il clinico esperto</p>
+
+    <div class="qa-answer">
+      <p>
+        La trappola nasce da un errore di trasferimento. Ogni medico che lavora con il NIPT ha interiorizzato, giustamente, che questo test è eccellente per la <strong>trisomia 21</strong> in una donna di 40 anni: PPV del 93%, quasi diagnostico. Questa esperienza costruisce un'aspettativa generalizzata di alta accuratezza predittiva — che viene poi, inconsciamente, applicata a tutte le condizioni screenate, compresa XXY.
+      </p>
+      <p>
+        Il meccanismo cognitivo è comprensibile. Specificità 99,86% suona come "è quasi impossibile che sia un falso positivo". Ma questa intuizione è sbagliata quando la prevalenza di base della condizione è bassa — e, crucialmente, <strong>quando quella prevalenza non cresce con l'età materna</strong>.
+      </p>
+    </div>
+
+    <div class="pull-quote">
+      <div class="pq-inner">
+        Per la trisomia 21, l'età materna spinge il PPV dal 48% al 93%. Per XXY, il PPV rimane intorno al 50% a qualsiasi età — perché la prevalenza di XXY non cambia con l'età.
+      </div>
+      <div class="pq-source">Principio bayesiano applicato al cfDNA screening · SMFM 2025</div>
+    </div>
+
+    <div class="qa-answer">
+      <p>
+        La chiave è il <strong>Teorema di Bayes</strong>. Il Valore Predittivo Positivo non è una proprietà fissa del test: dipende dalla prevalenza della condizione nella popolazione testata. La prevalenza di trisomia 21 sale da circa 1/1500 a 20 anni a circa 1/70 a 41 anni — e il PPV cresce di conseguenza, da 48% a 93%. La prevalenza di 47,XXY, invece, rimane stabilmente intorno a 1/660 nati maschi, indipendentemente dall'età materna.
+      </p>
+      <p>
+        Risultato: una donna di 41 anni con NIPT positivo per XXY ha ancora quasi il <strong>48% di probabilità di portare un feto sano</strong>. L'età avanzata non aiuta il PPV per XXY nel modo in cui aiuta per T21. Questo è il paradosso che il referto quasi mai esplicita.
+      </p>
+    </div>
+
+    <div class="callout warning">
+      <span class="callout-label">Implicazione clinica</span>
+      In una donna di 41 anni con NIPT positivo per T21, PPV 93%, si può ragionevolmente discutere delle implicazioni cliniche con alta probabilità di diagnosi vera. Con NIPT positivo per XXY, PPV ~52%, si sta ancora a un passo dall'incertezza diagnostica — indipendentemente dall'età. Le due situazioni non sono equivalenti e richiedono un counseling profondamente diverso.
+    </div>
+  </section>
+
+  <!-- INFOGRAPHIC 2 EMBED -->
+  <div class="infographic-embed" style="border-top-color: #d93025;">
+    <iframe src="infografica2_trappola_cognitiva.html" title="Infografica II — La Trappola Cognitiva" loading="lazy" scrolling="no" onload="this.style.height=(this.contentWindow.document.body.scrollHeight+20)+'px'"></iframe>
+    <div class="infographic-caption">
+      <span class="ic-num">Infografica II</span>
+      <div class="ic-text">Il ragionamento bayesiano applicato: T21 vs XXY per età materna, e il calcolo esplicito del PPV che il referto non riporta</div>
+    </div>
+  </div>
+
+  <!-- ============ Q3 ============ -->
+  <div class="ornamental-rule" style="margin:48px 0 0;"><div class="or-line"></div><div class="or-diamond"></div><div class="or-line"></div></div>
+
+  <section class="qa-block">
+    <div class="qa-number">Domanda III di IV</div>
+    <h2 class="qa-question">Perché il Confined Placental Mosaicism è particolarmente rilevante a 41 anni?</h2>
+    <p class="qa-question-sub">La biologia placentare come fonte primaria di falsi positivi per le anomalie del cromosoma X</p>
+
+    <div class="qa-answer">
+      <p>
+        Per capire il CPM, bisogna ricordare da dove viene il DNA che il NIPT misura. Il cfDNA circolante — quella frazione di DNA "libero" nel sangue materno su cui si basa l'intero test — <strong>non deriva dal feto, ma dalla placenta</strong>. Più precisamente, dal citotrofoblasto: lo strato più esterno della placenta, le cui cellule muoiono e rilasciano DNA nel circolo materno.
+      </p>
+      <p>
+        Il <strong>Confined Placental Mosaicism</strong> è definito come la presenza di una variazione genetica nei villi coriali placentari che <em>non è presente nel tessuto fetale</em>. In altre parole: la placenta può avere un cariotipo diverso dal feto. E quando il NIPT "legge" il DNA placentare, legge quell'anomalia placentare — e la segnala come se fosse fetale.
+      </p>
+    </div>
+
+    <div class="callout clinical">
+      <span class="callout-label">Dato fondamentale</span>
+      Il mosaicismo cromosomico è presente in circa <strong>1–2% dei tessuti placentari</strong> analizzati ai CVS. Per le anomalie del cromosoma X, il tasso di CPM raggiunge livelli straordinari: per la monosomia X (45,X), il <strong>59%</strong> dei casi rilevati al NIPT ha un CPM — non una vera monosomia fetale. Il CPM è il principale fattore biologico che abbassa il PPV delle anomalie del cromosoma sessuale.
+    </div>
+
+    <div class="qa-answer">
+      <p>
+        Esistono tre tipi di CPM, ciascuno con implicazioni diverse per il NIPT. Il <strong>Tipo 1</strong> — anomalia solo nel citotrofoblasto, mesenchima normale — è il principale responsabile dei falsi positivi, poiché il cfDNA deriva proprio dal citotrofoblasto. Il feto è sano, ma il NIPT vede l'anomalia e la segnala. Il <strong>Tipo 2</strong> — anomalia solo nel mesenchima — non viene rilevato dal NIPT, ma potrebbe influenzare il benessere fetale in altri modi. Il <strong>Tipo 3</strong> — anomalia in entrambi i layer — è quello con maggiore probabilità di coinvolgere anche il feto.
+      </p>
+      <p>
+        Perché tutto questo è <em>particolarmente</em> rilevante a 41 anni? Con l'avanzare dell'età materna, le cellule uovo accumulano errori meiotici e la divisione cellulare precoce è meno fedele. La separazione tra linea trofoblastica e linea embrionale avviene in un contesto già instabile — aumentando il rischio di errori mitotici post-zigotici che generano il CPM. Non è un caso che le anomalie del cromosoma X, quelle con i tassi di CPM più alti, siano anche quelle con i PPV più bassi al NIPT.
+      </p>
+    </div>
+
+    <div class="callout warning">
+      <span class="callout-label">Conseguenza diagnostica cruciale</span>
+      Quando il NIPT è positivo per XXY, il test di conferma preferibile è l'<strong>amniocentesi</strong> — non la villocentesi (CVS). La CVS campiona il tessuto placentare: se il positivo è causato da un CPM Tipo 1, la CVS potrebbe "confermare" l'anomalia placentare senza rivelare nulla sul cariotipo fetale reale. L'amniocentesi, campionando il liquido amniotico di derivazione prevalentemente fetale, bypassa completamente il problema del CPM. Questo è il test di prima scelta raccomandato da SMFM 2025 per le SCA con alta prevalenza di CPM.
+    </div>
+  </section>
+
+  <!-- INFOGRAPHIC 3 EMBED -->
+  <div class="infographic-embed" style="border-top-color: #1a6b6b;">
+    <iframe src="infografica3_CPM.html" title="Infografica III — CPM" loading="lazy" scrolling="no" onload="this.style.height=(this.contentWindow.document.body.scrollHeight+20)+'px'"></iframe>
+    <div class="infographic-caption">
+      <span class="ic-num">Infografica III</span>
+      <div class="ic-text">I tre tipi di CPM, i tassi per cromosoma, la biologia dello strato citotrofoblastico, e il confronto CVS vs Amniocentesi</div>
+    </div>
+  </div>
+
+  <!-- ============ Q4 ============ -->
+  <div class="ornamental-rule" style="margin:48px 0 0;"><div class="or-line"></div><div class="or-diamond"></div><div class="or-line"></div></div>
+
+  <section class="qa-block">
+    <div class="qa-number">Domanda IV di IV</div>
+    <h2 class="qa-question">Cosa c'entra l'"invecchiamento" delle cellule ematiche?</h2>
+    <p class="qa-question-sub">La perdita età-correlata del cromosoma X nei leucociti e il falso positivo XXY controintuitivo</p>
+
+    <div class="qa-answer">
+      <p>
+        Questo è il meccanismo più sottile — e, come suggerisce la domanda stessa, profondamente controintuitivo. Per comprenderlo bisogna ricordare un dettaglio tecnico spesso trascurato: il cfDNA che il NIPT misura <strong>non è solo DNA placentare</strong>. È DNA placentare che nuota in un oceano di DNA materno, rilasciato prevalentemente dai <em>leucociti</em> materni.
+      </p>
+      <p>
+        Con l'avanzare dell'età, nelle donne si verifica un fenomeno documentato: i globuli bianchi perdono progressivamente uno dei due cromosomi X. Questo fenomeno — <strong>Loss of X (LOX)</strong> — è fisiologico, ma aumenta in modo significativo con l'età. I dati di Russell et al. (2007), citati nel documento SMFM, mostrano una frequenza che va dallo <span class="stat-inline">0,07%</span> nei soggetti sotto i 16 anni a oltre il <span class="stat-inline red">7,3%</span> dopo i 65 anni.
+      </p>
+      <p>
+        A 41 anni ci troviamo in una fascia intermedia — ma già potenzialmente rilevante per gli algoritmi di sequenziamento ad alta profondità che il NIPT utilizza.
+      </p>
+    </div>
+
+    <div class="pull-quote">
+      <div class="pq-inner">
+        Ci aspettiamo che i leucociti XO materni generino un segnale Turner (45,X). Invece, possono disturbare gli algoritmi di normalizzazione in modo imprevedibile — contribuendo a falsi positivi per qualsiasi SCA, incluso XXY.
+      </div>
+      <div class="pq-source">Il paradosso della LOX nel cfDNA screening</div>
+    </div>
+
+    <div class="qa-answer">
+      <p>
+        Il paradosso è questo: intuitivamente, leucociti XO dovrebbero generare un segnale "mancanza di X" — compatibile con Turner, non con XXY. Invece, il background materno alterato disturba i <em>riferimenti di normalizzazione</em> dell'algoritmo. Il NIPT non legge il cariotipo direttamente: calcola <strong>differenze di dosaggio cromosomico</strong> tra il campione e un riferimento atteso. Se il riferimento materno è "sporco" da una quota crescente di cellule XO, le stime di dosaggio X/Y nel cfDNA possono produrre segnali aberranti compatibili con qualsiasi anomalia del cromosoma sessuale.
+      </p>
+      <p>
+        I dati di Wang et al. (2014) mettono un numero concreto su questo fenomeno: l'<strong>8,6% dei risultati positivi al cfDNA per le SCA</strong> derivava da mosaicismo del cromosoma sessuale materno — spesso completamente ignoto prima del test. Questo include sia condizioni germinali come il mosaicismo Turner, sia alterazioni somatiche acquisite come la LOX.
+      </p>
+    </div>
+
+    <div class="callout clinical">
+      <span class="callout-label">Implicazione clinica — unica per le SCA</span>
+      Quando un NIPT è positivo per una SCA e la successiva amniocentesi rivela un feto cromosomicamente <strong>normale</strong>, si dovrebbe considerare la possibilità di un'origine materna del segnale. Un <strong>cariotipo materno</strong> può essere appropriato per spiegare il falso positivo e per offrire un counseling corretto sui rischi per la donna stessa — inclusa la possibilità non nota di un mosaicismo Turner. Questo meccanismo è <em>specifico delle anomalie del cromosoma sessuale</em> e non si applica alle trisomie autosomiche.
+    </div>
+  </section>
+
+  <!-- INFOGRAPHIC 4 EMBED -->
+  <div class="infographic-embed" style="border-top-color: #7c5cbf;">
+    <iframe src="infografica4_LOX_ematiche.html" title="Infografica IV — LOX" loading="lazy" scrolling="no" onload="this.style.height=(this.contentWindow.document.body.scrollHeight+20)+'px'"></iframe>
+    <div class="infographic-caption">
+      <span class="ic-num">Infografica IV</span>
+      <div class="ic-text">Il fenomeno LOX per fascia d'età, il percorso paradossale passo per passo (leucocita XO → segnale XXY), l'8,6% da mosaicismo materno</div>
+    </div>
+  </div>
+
+  <!-- CONCLUSION -->
+  <section class="conclusion">
+    <div class="conclusion-inner">
+      <div class="concl-eyebrow">Sintesi clinica</div>
+      <h2 class="concl-title">Quattro livelli di incertezza sovrapposti</h2>
+      <div class="concl-body">
+        <p>
+          Un risultato NIPT positivo per 47,XXY in una donna di 41 anni deve essere letto attraverso quattro lenti sovrapposte, non attraverso una sola.
+        </p>
+        <p>
+          <strong>Livello 1 — Biostatistico:</strong> il PPV è circa 52%. L'età non aiuta per XXY come per T21. Quasi metà dei positivi sono falsi, indipendentemente dall'aspettativa che i numeri alti del test sembrano generare.
+        </p>
+        <p>
+          <strong>Livello 2 — Placentare (CPM):</strong> la placenta può avere un mosaicismo XXY confinato al citotrofoblasto che non riflette il cariotipo fetale. Il tasso di CPM per le anomalie del cromosoma X è biologicamente tra i più alti di tutti i cromosomi. L'amniocentesi — non la CVS — è il test di conferma raccomandato.
+        </p>
+        <p>
+          <strong>Livello 3 — Materno-ematico (LOX):</strong> il DNA dei leucociti, sempre più contaminato da cellule XO con l'avanzare dell'età, crea un background cromosomico "rumoroso" che può disturbare gli algoritmi di dosage e contribuire a falsi positivi per SCA.
+        </p>
+        <p>
+          <strong>Livello 4 — CNV del cromosoma X:</strong> le varianti strutturali del cromosoma X, presenti a tutte le età, possono ulteriormente interferire con la stima del dosage cromosomiale.
+        </p>
+        <p>
+          La confluenza di questi quattro meccanismi rende il NIPT positivo per XXY in una donna di 41 anni una <strong>indicazione assoluta a counseling genetico specialistico e amniocentesi</strong> — non a decisioni cliniche basate sul solo screening.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOURCES -->
+  <section class="sources-block">
+    <div class="sources-title">Fonti e riferimenti</div>
+    <ul class="sources-list">
+      <li>SMFM Consult Series #74 — <em>Cell-free DNA screening for aneuploidies</em>. Pregnancy, 2025. DOI: 10.1002/pmf2.70139</li>
+      <li>Bussolaro S. et al. — <em>The accuracy of prenatal cell-free DNA screening for sex chromosome abnormalities: A systematic review and meta-analysis</em>. AJOG MFM, 2023.</li>
+      <li>Russell L.M. et al. — <em>X chromosome loss and ageing</em>. Cytogenetic and Genome Research, 2007.</li>
+      <li>Wang Y. et al. — <em>Maternal mosaicism is a significant contributor to discordant sex chromosomal aneuploidies associated with noninvasive prenatal testing</em>. Clinical Chemistry, 2014.</li>
+      <li>Mardy A.H. & Norton M.E. — <em>Diagnostic testing after positive results on cell-free DNA screening: CVS or amnio?</em> Prenatal Diagnosis, 2021.</li>
+      <li>UpToDate — <em>Sex chromosome abnormalities</em>. Aggiornamento 2025.</li>
+    </ul>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-rubric">Segnale e Rumore</div>
+  <div class="footer-desc">
+    Una rubrica di educazione perinatale per clinici, studenti e chiunque voglia capire davvero cosa c'è dietro i numeri della medicina moderna. Senza semplificazioni. Con le fonti.
+  </div>
+  <a class="footer-btn" href="#">Iscriviti alla rubrica →</a>
+</footer>
+
+<script>
+  // Auto-resize iframes on load
+  document.querySelectorAll('iframe').forEach(iframe => {
+    iframe.addEventListener('load', function() {
+      try {
+        const h = this.contentWindow.document.body.scrollHeight;
+        this.style.height = (h + 20) + 'px';
+      } catch(e) {
+        // cross-origin fallback
+        this.style.height = '750px';
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

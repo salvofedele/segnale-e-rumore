@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infografica 1 — Falsi Positivi XXY al NIPT</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a0f23;
+    --navy2: #111828;
+    --amber: #f5a623;
+    --amber2: #ffd166;
+    --red: #e05c5c;
+    --green: #4ecdc4;
+    --white: #f0eee8;
+    --muted: #8892a4;
+    --card: #161e33;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  /* ---- HEADER ---- */
+  .header {
+    background: var(--navy2);
+    border-bottom: 3px solid var(--amber);
+    padding: 40px 60px 30px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content:'';
+    position:absolute; top:0; right:0;
+    width:300px; height:100%;
+    background: radial-gradient(ellipse at 100% 50%, rgba(245,166,35,0.12), transparent 70%);
+  }
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 900;
+    line-height: 1.1;
+    max-width: 700px;
+  }
+  h1 span { color: var(--amber); }
+  .subtitle {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 300;
+    max-width: 600px;
+    line-height: 1.6;
+  }
+  .source-tag {
+    margin-top: 18px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  /* ---- MAIN GRID ---- */
+  .main { padding: 40px 60px; }
+
+  /* Big stat */
+  .big-stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 36px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s;
+  }
+  .stat-card:hover { transform: translateY(-3px); }
+  .stat-card::before {
+    content:'';
+    position:absolute; top:0; left:0; right:0;
+    height:3px;
+  }
+  .stat-card.amber::before { background: var(--amber); }
+  .stat-card.red::before   { background: var(--red); }
+  .stat-card.green::before { background: var(--green); }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 54px;
+    font-weight: 900;
+    line-height: 1;
+  }
+  .stat-card.amber .stat-num { color: var(--amber); }
+  .stat-card.red   .stat-num { color: var(--red); }
+  .stat-card.green .stat-num { color: var(--green); }
+  .stat-desc {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* PPV comparison table */
+  .section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(245,166,35,0.3);
+  }
+
+  .table-wrap {
+    background: var(--card);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 36px;
+    animation: fadeUp 0.6s 0.2s ease both;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: rgba(245,166,35,0.12); }
+  th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--amber);
+    padding: 14px 20px;
+    text-align: left;
+  }
+  td {
+    padding: 13px 20px;
+    font-size: 14px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    color: var(--white);
+  }
+  tr:hover td { background: rgba(255,255,255,0.03); }
+  .highlight-row td { background: rgba(245,166,35,0.07); }
+  .highlight-row td:first-child { color: var(--amber); font-weight: 500; }
+  .ppv-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .bar-bg {
+    flex: 1; height: 8px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .bar-fill { height: 100%; border-radius: 4px; }
+  .bar-fill.amber { background: var(--amber); }
+  .bar-fill.red   { background: var(--red); }
+  .bar-fill.green { background: var(--green); }
+  .bar-fill.muted { background: var(--muted); }
+  .bar-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    min-width: 34px;
+    text-align: right;
+  }
+
+  /* Visual: 10×10 grid */
+  .visual-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 36px;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .grid-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 28px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .grid-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+  .grid-card p { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 22px; }
+
+  .dot-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 6px;
+  }
+  .dot {
+    width: 100%; aspect-ratio: 1;
+    border-radius: 50%;
+    transition: transform 0.3s;
+  }
+  .dot:hover { transform: scale(1.3); }
+  .dot.fp   { background: var(--red); }
+  .dot.tp   { background: var(--green); }
+  .dot.tn   { background: rgba(255,255,255,0.1); }
+  .dot.fn   { background: rgba(78,205,196,0.3); }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* Meta-analysis range card */
+  .meta-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 28px;
+    border: 1px solid rgba(255,255,255,0.06);
+    animation: fadeUp 0.6s 0.4s ease both;
+    margin-bottom: 36px;
+  }
+  .meta-range {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-top: 24px;
+    position: relative;
+  }
+  .range-track {
+    flex: 1;
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--red) 0%, var(--amber) 40%, var(--green) 100%);
+    position: relative;
+  }
+  .range-marker {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 3px solid var(--navy);
+    cursor: default;
+  }
+  .range-marker.m1 { left: 14.5%; background: var(--red); }
+  .range-marker.m2 { left: 29%; background: var(--amber); }
+  .range-marker.m3 { left: 67.6%; background: var(--green); }
+  .range-marker.m4 { left: 97.7%; background: #a8edea; }
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .rl-item { text-align: center; flex: 1; min-width: 80px; }
+  .rl-pct {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .rl-pct.r { color: var(--red); }
+  .rl-pct.a { color: var(--amber); }
+  .rl-pct.g { color: var(--green); }
+  .rl-pct.t { color: #a8edea; }
+  .rl-src { font-size: 10px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+
+  /* footer note */
+  .footer-note {
+    background: rgba(245,166,35,0.08);
+    border-left: 3px solid var(--amber);
+    border-radius: 0 8px 8px 0;
+    padding: 18px 24px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    animation: fadeUp 0.6s 0.5s ease both;
+  }
+  .footer-note strong { color: var(--white); }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform: translateY(20px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  @media (max-width: 900px) {
+    .main, .header { padding: 28px 22px; }
+    .big-stat-row { grid-template-columns: 1fr; }
+    .visual-row { grid-template-columns: 1fr; }
+    .stat-num { font-size: 38px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="tag">Infografica I · NIPT &amp; Cromosome Sessuali</div>
+  <h1>Quantificare il problema:<br>i <span>Falsi Positivi per 47,XXY</span></h1>
+  <p class="subtitle">Un NIPT positivo per Klinefelter (XXY) non è una diagnosi. I numeri rivelano una realtà spesso sottovalutata nella comunicazione clinica.</p>
+  <div class="source-tag">FONTE PRIMARIA · SMFM Consult Series #74 (2025) · Bussolaro et al. 2023 · Shear et al.</div>
+</div>
+
+<div class="main">
+
+  <!-- Big stats -->
+  <div class="big-stat-row">
+    <div class="stat-card amber">
+      <div class="stat-label">Sensibilità cfDNA per XXY</div>
+      <div class="stat-num">93%</div>
+      <div class="stat-desc">Alta capacità di individuare i veri positivi — ma non dice nulla su quanti falsi positivi genera.</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Specificità cfDNA per XXY</div>
+      <div class="stat-num">99.86%</div>
+      <div class="stat-desc">Apparentemente eccellente: solo 14 su 10.000 campioni normali vengono erroneamente classificati positivi.</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">PPV a 40 anni (SMFM Table 2)</div>
+      <div class="stat-num">52%</div>
+      <div class="stat-desc">Quindi: 1 donna su 2 con NIPT positivo per XXY porta un feto cromosomicamente normale per quel locus.</div>
+    </div>
+  </div>
+
+  <!-- PPV table -->
+  <div class="section-title">Confronto PPV per condizione e età materna — Table 2 SMFM 2025</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Condizione</th>
+          <th>Sens. %</th>
+          <th>Spec. %</th>
+          <th>PPV 20 aa</th>
+          <th>PPV 35 aa</th>
+          <th>PPV 40 aa</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Trisomia 21</td>
+          <td>99.2</td><td>99.91</td>
+          <td><div class="ppv-bar"><div class="bar-bg"><div class="bar-fill green" style="width:48%"></div></div><span class="bar-num">48%</span></div></td>
+          <td><div class="ppv-bar"><div class="bar-bg"><div class="bar-fill green" style="width:79%"></div></div><span class="bar-num">79%</span></div></td>
+          <td><div class="ppv-bar"><div class="bar-bg"><div class="bar-fill green" style="width:93%"></div></div><span class="bar-num" style="color:var(--green)">93%</span></div></td>
+        </tr>
+        <tr>
+          <td>Trisomia 18</td>
+          <td>96.3</td><td>99.87</td>
+          <td><div class="ppv-bar"><div class="bar-bg"><div class="bar-fill muted" style="width:14%"></div></div><span class="bar-num">14%</span></div></td>
+          <td><div class="ppv-bar"><div class="bar-bg"><div class="bar-fill muted" style="width:39%"></div></div><span class="bar-num">39%</span></div></td>
+          <td><div class="ppv-bar"><div class="bar-bg"><div class="bar-fill amber" style="width:69%"></div></div><span class="bar-num">69%</span></div></td>
+        </tr>
+        <tr>
+          <td>45,X (Turner)</td>
+          <td>90.3</td><td>99.77</td>
+          <td><div class="ppv-bar"><div class="bar-bg"><div class="bar-fill red" style="width:32%"></div></div><span class="bar-num" style="color:var(--red)">32%</span></div></td>
+          <td><div class="ppv-bar"><div class="bar-bg"><div class="bar-fill red" style="width:32%"></div></div><span class="bar-num" style="color:var(--red)">32%</span></div></td>
+          <td><div class="ppv-bar"><div class="bar-bg"><div class="bar-fill red" style="width:32%"></div></div><span class="bar-num" style="color:var(--red)">32%</span></div></td>
+        </tr>
+        <tr class="highlight-row">
+          <td>47,XXY ← focus</td>
+          <td>93</td><td>99.86</td>
+          <td><div class="ppv-bar"><div class="bar-bg"><div class="bar-fill amber" style="width:29%"></div></div><span class="bar-num" style="color:var(--amber)">29%</span></div></td>
+          <td><div class="ppv-bar"><div class="bar-bg"><div class="bar-fill amber" style="width:30%"></div></div><span class="bar-num" style="color:var(--amber)">30%</span></div></td>
+          <td><div class="ppv-bar"><div class="bar-bg"><div class="bar-fill amber" style="width:52%"></div></div><span class="bar-num" style="color:var(--amber)">52%</span></div></td>
+        </tr>
+        <tr>
+          <td>47,XYY</td>
+          <td>93</td><td>99.86</td>
+          <td><div class="ppv-bar"><div class="bar-bg"><div class="bar-fill green" style="width:71%"></div></div><span class="bar-num">71%</span></div></td>
+          <td><div class="ppv-bar"><div class="bar-bg"><div class="bar-fill green" style="width:71%"></div></div><span class="bar-num">71%</span></div></td>
+          <td><div class="ppv-bar"><div class="bar-bg"><div class="bar-fill green" style="width:71%"></div></div><span class="bar-num">71%</span></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Dot grid visual -->
+  <div class="visual-row">
+    <div class="grid-card">
+      <h3>100 donne NIPT+ per XXY a 40 anni</h3>
+      <p>Con PPV ~52%: circa 52 hanno un feto effettivamente XXY, ma <strong style="color:var(--red)">48 no</strong>. Ogni punto rosso è un falso positivo.</p>
+      <div class="dot-grid" id="dotGrid"></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Vero Positivo (XXY confermato)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Falso Positivo (feto normale)</div>
+      </div>
+    </div>
+
+    <div class="grid-card">
+      <h3>PPV: la variabilità è essa stessa un problema</h3>
+      <p>Diversi studi e metanalisi riportano valori di PPV per XXY enormemente diversi — segno di una performance eterogenea e popolazione-dipendente.</p>
+
+      <div class="meta-card" style="padding:0; background:transparent; border:none; margin-bottom:0; animation:none;">
+        <div class="range-track" style="margin-top:20px;">
+          <div class="range-marker m1" title="Calcolatori indipendenti: 29%"></div>
+          <div class="range-marker m2" title="SMFM Table 2 a 40aa: 52%"></div>
+          <div class="range-marker m3" title="Bussolaro 2023: 67.6%"></div>
+          <div class="range-marker m4" title="Shear et al.: 97.7%"></div>
+        </div>
+        <div class="range-labels">
+          <div class="rl-item"><div class="rl-pct r">29%</div><div class="rl-src">Calcolatori<br>indipendenti</div></div>
+          <div class="rl-item"><div class="rl-pct a">52%</div><div class="rl-src">SMFM Table 2<br>40 anni</div></div>
+          <div class="rl-item"><div class="rl-pct g">67.6%</div><div class="rl-src">Bussolaro<br>2023</div></div>
+          <div class="rl-item"><div class="rl-pct t">97.7%</div><div class="rl-src">Shear<br>et al.</div></div>
+        </div>
+        <p style="margin-top:16px; font-size:12px; color:var(--muted); line-height:1.5;">La variabilità stessa tra <strong style="color:var(--white)">29%</strong> e <strong style="color:var(--white)">97.7%</strong> è un messaggio clinico: il PPV dipende criticamente dalla prevalenza nella popolazione testata, dai criteri di conferma diagnostica e dalla piattaforma di laboratorio.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    <strong>Implicazione clinica essenziale:</strong> Un risultato NIPT positivo per 47,XXY NON è una diagnosi. Anche nel migliore degli scenari (donna 40 anni, PPV 52%), è obbligatoria la conferma con <strong>amniocentesi</strong>. Il consenso SMFM 2025 raccomanda esplicitamente di <strong>non basare decisioni cliniche irreversibili sul solo screening cfDNA</strong>, e il counseling pretest deve chiarire questa limitazione prima dell'esecuzione del test.
+  </div>
+
+</div>
+
+<script>
+  // Build dot grid: 52 green (TP), 48 red (FP)
+  const grid = document.getElementById('dotGrid');
+  const dots = Array(52).fill('tp').concat(Array(48).fill('fp'));
+  // shuffle
+  for(let i=dots.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [dots[i],dots[j]]=[dots[j],dots[i]];
+  }
+  dots.forEach(type=>{
+    const d=document.createElement('div');
+    d.className='dot '+type;
+    grid.appendChild(d);
+  });
+</script>
+</body>
+</html>
